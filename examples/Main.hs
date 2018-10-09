@@ -5,7 +5,7 @@ import Db (Db, DbEnv(..), query)
 import Logger (Logger, LoggerEnv(..), info)
 
 -- | Whole-box
-type App m = Db `Also` (Logger `Also` NoComponent m)
+type App m = Db `Also` Logger `Also` NoComponent m
 
 config =
     ( DbEnv { dbName = "foo-db", dbSomething = 5 }

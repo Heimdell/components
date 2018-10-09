@@ -77,6 +77,8 @@ deriving instance
 --
 data comp `Also` box
 
+infixr 5 `Also`
+
 instance
     (IsComponent comp, IsComponent other, BaseM comp ~ BaseM other)
         =>
@@ -225,4 +227,3 @@ tryThe
     -> ComponentM box (Either (Error comp) a)
 tryThe comp =
     catchFrom @comp (Right <$> comp) (return . Left)
-
