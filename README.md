@@ -4,7 +4,7 @@
 This package is for dividing your app onto components and algebraically composing them,
 while not caring about global state or environment or the-type-for-all-errors-combined.
 
-Global state, environment and errors will be composed for you by provided combinators.
+Global state, environment and errors will be composed for you by the combinators provided.
 
 # Reason
 
