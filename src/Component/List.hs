@@ -5,7 +5,7 @@ module Component.List
       Also
 
       -- * Initial empty box
-    , NoComponent
+    , End
 
       -- * Subcomponent access
     , select
@@ -22,18 +22,17 @@ import Control.Monad.Except
 
 import Component.Class (IsComponent(..))
 import Component.Monad.Final (ERST, eRST, runERST)
+import Component.Find
 
-data NoComponent (m :: * -> *)
-
-instance Monad m => IsComponent (NoComponent m) where
-    data Error (NoComponent m)
+instance Monad m => IsComponent (End m) where
+    data Error (End m)
         deriving Show
 
-    type Env   (NoComponent m) = ()
-    type State (NoComponent m) = ()
-    type BaseM (NoComponent m) = m
+    type Env   (End m) = ()
+    type State (End m) = ()
+    type BaseM (End m) = m
 
-    newtype ComponentM (NoComponent m) a = ComponentM0 { getComponentM0 :: m a }
+    newtype ComponentM (End m) a = ComponentM0 { getComponentM0 :: m a }
 
     runComponentM  = runIT . getComponentM0
       where
@@ -44,40 +43,17 @@ instance Monad m => IsComponent (NoComponent m) where
 deriving instance
     (Monad m)
         =>
-    (Functor (ComponentM (NoComponent m)))
+    (Functor (ComponentM (End m)))
 
 deriving instance
     (Monad m)
         =>
-    (Applicative (ComponentM (NoComponent m)))
+    (Applicative (ComponentM (End m)))
 
 deriving instance
     (Monad m)
         =>
-    (Monad (ComponentM (NoComponent m)))
-
--- | Dumb naive component composer.
---
---   Does its work by making appropriate tensor products over
---   subcomponents parts.
---
---   So, if 'State comp' is 'Foo' and 'State other' is 'Bar',
---   the 'State (comp `Also` bar)' is '(Foo, Bar)' - a product.
---
---   The errors are summed. If your component can't throw, make its
---   'Error' isomorphic to 'Data.Void.Void'.
---
---   Its 'ComponentM' deliberately lacks any MonadReader, State, Writer or IO
---   instances. You can't access global context, state, make I/O, etc.
---   You should do it through subcomponents.
---
---   Usage: if 'comp' and 'other' are components with same 'BaseM',
---          then so does 'comp `Also` other'. It infers its 'State', 'Env', 'Error'
---          and all methods.
---
-data comp `Also` box
-
-infixr 5 `Also`
+    (Monad (ComponentM (End m)))
 
 instance
     (IsComponent comp, IsComponent other, BaseM comp ~ BaseM other)
@@ -136,15 +112,6 @@ class
     selectComponent :: ComponentM comp a -> ComponentM box a
     selectError     :: Error box -> Maybe (Error comp)
     uncoverError    :: ComponentM box a -> ComponentM box (Either (Error comp) a)
-
--- | IsComponent search path.
-data Here
-data There r
-
--- | IsComponent search.
-type family Find a b where
-    Find a (Also a _) = Here
-    Find a (Also _ r) = There (Find a r)
 
 -- | Extraction of head component.
 instance

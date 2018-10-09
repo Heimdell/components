@@ -18,3 +18,6 @@
 * Removed `catchFrom` field from `IsComponent` class
 * Added `catchFrom` as a global function
 * Added `tryThe` as `Control.Exception.try` analogue
+* Added README.md
+* Renamed `NoComponent` to `End` \[of the list]
+* Separated type family `Find` fron the implementation of component list

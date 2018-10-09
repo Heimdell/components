@@ -1,11 +1,11 @@
 
-import Component (Also, runComponentM, catchFrom, Error, NoComponent)
+import Component (Also, End, runComponentM, Error, catchFrom)
 
 import Db (Db, DbEnv(..), query)
 import Logger (Logger, LoggerEnv(..), info)
 
 -- | Whole-box
-type App m = Db `Also` Logger `Also` NoComponent m
+type App m = Db `Also` Logger `Also` End m
 
 config =
     ( DbEnv { dbName = "foo-db", dbSomething = 5 }
