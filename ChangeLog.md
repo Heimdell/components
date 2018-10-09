@@ -8,6 +8,6 @@
 
 * Removed some dumbness from examples.
 
-## 1.0.0.0  -- 2018-10-09
+## 0.2.0.0  -- 2018-10-09
 
 * Changed API: `Component.List`(`HasComponent`, `Find`) were replaced by `Contains`
