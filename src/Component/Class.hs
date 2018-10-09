@@ -6,7 +6,7 @@ module Component.Class
     where
 
 -- | Abstracts away component capabilities.
-class Monad (BaseM comp) => IsComponent comp where
+class (Monad (BaseM comp), Monad (ComponentM comp)) => IsComponent comp where
     data Error      comp :: *
     type Env        comp :: *
     type State      comp :: *
@@ -22,9 +22,3 @@ class Monad (BaseM comp) => IsComponent comp where
             ( Either (Error comp) a
             , State comp
             )
-
-    -- | Catch an error, originating from the component.
-    catchFrom
-        :: ComponentM comp a
-        -> (Error comp -> ComponentM comp a)
-        -> ComponentM comp a

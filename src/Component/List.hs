@@ -4,8 +4,15 @@ module Component.List
       -- * Composer
       Also
 
+      -- * Initial empty box
+    , NoComponent
+
       -- * Subcomponent access
     , select
+
+      -- * Error picker
+    , catchFrom
+    , tryThe
 
       -- * Existence of subcomponent
     , Contains
@@ -15,6 +22,39 @@ import Control.Monad.Except
 
 import Component.Class (IsComponent(..))
 import Component.Monad.Final (ERST, eRST, runERST)
+
+data NoComponent (m :: * -> *)
+
+instance Monad m => IsComponent (NoComponent m) where
+    data Error (NoComponent m)
+        deriving Show
+
+    type Env   (NoComponent m) = ()
+    type State (NoComponent m) = ()
+    type BaseM (NoComponent m) = m
+
+    newtype ComponentM (NoComponent m) a = ComponentM0 { getComponentM0 :: m a }
+
+    runComponentM  = runIT . getComponentM0
+      where
+        runIT action _ st = do
+            res <- action
+            return (Right res, st)
+
+deriving instance
+    (Monad m)
+        =>
+    (Functor (ComponentM (NoComponent m)))
+
+deriving instance
+    (Monad m)
+        =>
+    (Applicative (ComponentM (NoComponent m)))
+
+deriving instance
+    (Monad m)
+        =>
+    (Monad (ComponentM (NoComponent m)))
 
 -- | Dumb naive component composer.
 --
@@ -63,11 +103,6 @@ instance
 
     runComponentM  = runERST . getComponentM
 
-    catchFrom action handler =
-        ComponentM $
-            getComponentM action
-                `catchError` (getComponentM . handler)
-
 -- Why does GHC ignores class constraints when deriving for newtype of type family?
 deriving instance
     (Show (Error comp), Show (Error other), IsComponent (Also comp other))
@@ -97,23 +132,23 @@ class
     HasComponent path comp box
   where
     selectComponent :: ComponentM comp a -> ComponentM box a
+    selectError     :: Error box -> Maybe (Error comp)
+    uncoverError    :: ComponentM box a -> ComponentM box (Either (Error comp) a)
 
 -- | IsComponent search path.
 data Here
 data There r
-data Itself
 
 -- | IsComponent search.
 type family Find a b where
     Find a (Also a _) = Here
     Find a (Also _ r) = There (Find a r)
-    Find a  a         = Itself
 
 -- | Extraction of head component.
 instance
-    (IsComponent comp, IsComponent other, BaseM comp ~ BaseM other, comp ~ comp')
+    (IsComponent comp, IsComponent other, BaseM comp ~ BaseM other)
         =>
-    HasComponent Here comp (Also comp' other)
+    HasComponent Here comp (Also comp other)
   where
     selectComponent comp = ComponentM . eRST $ \(env, _) (st, st') -> do
         (it, st1) <- runComponentM comp env st
@@ -122,6 +157,19 @@ instance
             Left err -> Left (This err)
             Right a  -> Right a
         return (res, (st1, st'))
+
+    selectError (This err) = Just err
+    selectError  _         = Nothing
+
+    uncoverError comp = ComponentM . eRST $ \env st -> do
+        (it, st1) <- runComponentM @(Also comp other) comp env st
+        let
+          res = case it of
+            Left err -> case selectError @Here @comp err of
+                Nothing  -> Left err
+                Just err -> Right (Left err)
+            Right a  -> Right (Right a)
+        return (res, st1)
 
 -- | Extraction of component from tail.
 instance
@@ -137,13 +185,18 @@ instance
             Right a  -> Right a
         return (res, (st', st1))
 
--- | Extraction of component from itself.
-instance
-    IsComponent comp
-        =>
-    HasComponent Itself comp comp
-  where
-    selectComponent = id
+    selectError (That err) = Just err >>= selectError @path
+    selectError  _         = Nothing
+
+    uncoverError comp = ComponentM . eRST $ \env st -> do
+        (it, st1) <- runComponentM @(Also comp' rest) comp env st
+        let
+          res = case it of
+            Left err -> case selectError @(There path) @comp err of
+                Nothing  -> Left err
+                Just err -> Right (Left err)
+            Right a  -> Right (Right a)
+        return (res, st1)
 
 type Contains box comp = HasComponent (Find comp box) comp box
 
@@ -153,3 +206,23 @@ type Contains box comp = HasComponent (Find comp box) comp box
 --
 select :: forall comp box a . Contains box comp => ComponentM comp a -> ComponentM box a
 select = selectComponent @(Find comp box)
+
+-- | Picks errors from 'comp' component of the 'box' specifically.
+catchFrom
+    :: forall comp box a
+    .  Contains box comp
+    => ComponentM box a
+    -> (Error comp -> ComponentM box a)
+    -> ComponentM box a
+catchFrom comp handle = do
+    uncoverError @(Find comp box) comp >>= either handle return
+
+-- | Analogue to 'Control.Exception.try'
+tryThe
+    :: forall comp box a
+    . Contains box comp
+    => ComponentM box a
+    -> ComponentM box (Either (Error comp) a)
+tryThe comp =
+    catchFrom @comp (Right <$> comp) (return . Left)
+

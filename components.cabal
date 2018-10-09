@@ -23,6 +23,7 @@ library
     AllowAmbiguousTypes
     ConstraintKinds
     DeriveFunctor
+    EmptyDataDeriving
     FlexibleContexts
     FlexibleInstances
     GeneralizedNewtypeDeriving
@@ -53,6 +54,7 @@ executable Example
     FlexibleInstances
     GeneralizedNewtypeDeriving
     MultiParamTypeClasses
+    ScopedTypeVariables
     StandaloneDeriving
     TypeApplications
     TypeFamilies

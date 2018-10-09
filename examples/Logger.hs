@@ -35,8 +35,6 @@ instance IsComponent Logger where
             res <- runReaderT action env
             return (Right res, st)
 
-    catchFrom action _ = action
-
 deriving instance MonadReader LoggerEnv (ComponentM Logger)
 
 info :: Contains box Logger => String -> ComponentM box ()

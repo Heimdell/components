@@ -43,8 +43,6 @@ instance IsComponent Db where
                 `catch` (return . Left . IOErr)
             return (res, st)
 
-    catchFrom = catchError
-
 deriving instance MonadReader DbEnv (ComponentM Db)
 
 -- | Sorry, database is out for dinner.
@@ -52,4 +50,3 @@ query :: Contains box Db => String -> ComponentM box ()
 query msg = do
     select @Db $ do
         throwError $ NoKey msg
-

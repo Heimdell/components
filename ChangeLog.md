@@ -10,4 +10,11 @@
 
 ## 0.2.0.0  -- 2018-10-09
 
-* Changed API: `Component.List`(`HasComponent`, `Find`) were replaced by `Contains`
+* `Component.List`(`HasComponent`, `Find`) were replaced by `Contains`
+
+## 0.3.0.0  -- 2018-10-09
+
+* Added `NoComponent` as an empty list of components
+* Removed `catchFrom` field from `IsComponent` class
+* Added `catchFrom` as a global function
+* Added `tryThe` as `Control.Exception.try` analogue
