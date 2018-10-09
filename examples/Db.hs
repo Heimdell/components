@@ -11,6 +11,11 @@ import Component
 -- | Examples: Database.
 data Db
 
+data DbEnv = DbEnv
+    { dbName      :: String
+    , dbSomething :: Int
+    }
+
 instance IsComponent Db where
     data Error Db
         = NoKey String
@@ -18,7 +23,7 @@ instance IsComponent Db where
         | IOErr IOException
         deriving Show
 
-    type Env Db = (String, Int)
+    type Env Db = DbEnv
     type State Db = ()
     type BaseM Db = IO
 
@@ -40,7 +45,7 @@ instance IsComponent Db where
 
     catchFrom = catchError
 
-deriving instance MonadReader (String, Int) (ComponentM Db)
+deriving instance MonadReader DbEnv (ComponentM Db)
 
 -- | Sorry, database is out for dinner.
 query :: HasComponent (Find Db box) Db box => String -> ComponentM box ()

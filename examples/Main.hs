@@ -1,13 +1,18 @@
 
-import Component
+import Component (Also, runComponentM, catchFrom)
 
-import Db
-import Logger
+import Db (Db, DbEnv(..), query)
+import Logger (Logger, LoggerEnv(..), info)
 
 -- | Whole-box
 type App = Db `Also` Logger
 
-main = print =<< runComponentM @App action (("foo", 42), 0.5) ((), ())
+config =
+    ( DbEnv { dbName = "foo-db", dbSomething = 5 }
+    , LoggerEnv { logOutput = "stdout", logSeverity = 0 }
+    )
+
+main = print =<< runComponentM @App action config ((), ())
   where
     -- Usage. Notice: all monad stack are concrete; specialise if you want!
     action = do
