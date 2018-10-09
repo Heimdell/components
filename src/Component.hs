@@ -7,4 +7,3 @@ module Component (module Component.Class, module Component.List, module Componen
 import Component.Class
 import Component.List
 import Component.Find
-

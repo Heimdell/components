@@ -34,5 +34,3 @@ data There r
 type family Find a b where
     Find a (Also a _) = Here
     Find a (Also _ r) = There (Find a r)
-
-
