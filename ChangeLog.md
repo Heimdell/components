@@ -10,4 +10,4 @@
 
 ## 1.0.0.0  -- 2018-10-09
 
-* Changed API: `component.List`(`HasComponent`, `Find`) were replaced by `Contains`
+* Changed API: `Component.List`(`HasComponent`, `Find`) were replaced by `Contains`
