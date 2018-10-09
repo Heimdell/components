@@ -2,7 +2,7 @@
 -- documentation, see http://haskell.org/cabal/users-guide/
 
 name:                components
-version:             0.1.0.1
+version:             1.0.0.0
 -- synopsis:
 -- description:
 license:             BSD3
@@ -20,18 +20,19 @@ library
   exposed-modules:     Component
   other-modules:       Component.Class, Component.List, Component.Monad.Final
   default-extensions:
-    TypeFamilies
-    TypeApplications
-    ScopedTypeVariables
-    MultiParamTypeClasses
-    FlexibleInstances
-    FlexibleContexts
-    UndecidableInstances
     AllowAmbiguousTypes
-    GeneralizedNewtypeDeriving
+    ConstraintKinds
     DeriveFunctor
+    FlexibleContexts
+    FlexibleInstances
+    GeneralizedNewtypeDeriving
+    MultiParamTypeClasses
+    ScopedTypeVariables
     StandaloneDeriving
+    TypeApplications
+    TypeFamilies
     TypeOperators
+    UndecidableInstances
 
 
   build-depends:       base, mtl, constraints
@@ -47,12 +48,12 @@ executable Example
                      , components
                      , mtl
   default-extensions:
+    EmptyDataDeriving
+    FlexibleContexts
+    FlexibleInstances
+    GeneralizedNewtypeDeriving
+    MultiParamTypeClasses
+    StandaloneDeriving
     TypeApplications
     TypeFamilies
-    StandaloneDeriving
-    GeneralizedNewtypeDeriving
-    FlexibleInstances
-    MultiParamTypeClasses
-    FlexibleContexts
-    EmptyDataDeriving
     TypeOperators

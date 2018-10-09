@@ -7,3 +7,7 @@
 ## 0.1.0.1  -- 2018-10-08
 
 * Removed some dumbness from examples.
+
+## 1.0.0.0  -- 2018-10-09
+
+* Changed API: `component.List`(`HasComponent`, `Find`) were replaced by `Contains`

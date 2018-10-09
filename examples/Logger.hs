@@ -39,7 +39,7 @@ instance IsComponent Logger where
 
 deriving instance MonadReader LoggerEnv (ComponentM Logger)
 
-info :: HasComponent (Find Logger box) Logger box => String -> ComponentM box ()
+info :: Contains box Logger => String -> ComponentM box ()
 info msg = do
     select @Logger $ do
         LoggerEnv logOutput logSeverity <- ask

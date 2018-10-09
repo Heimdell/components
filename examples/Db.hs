@@ -48,7 +48,7 @@ instance IsComponent Db where
 deriving instance MonadReader DbEnv (ComponentM Db)
 
 -- | Sorry, database is out for dinner.
-query :: HasComponent (Find Db box) Db box => String -> ComponentM box ()
+query :: Contains box Db => String -> ComponentM box ()
 query msg = do
     select @Db $ do
         throwError $ NoKey msg

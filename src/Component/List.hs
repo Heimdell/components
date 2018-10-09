@@ -8,10 +8,7 @@ module Component.List
     , select
 
       -- * Existence of subcomponent
-    , HasComponent
-
-      -- * Component lookup
-    , Find
+    , Contains
     ) where
 
 import Control.Monad.Except
@@ -148,9 +145,11 @@ instance
   where
     selectComponent = id
 
+type Contains box comp = HasComponent (Find comp box) comp box
+
 -- | If box has a component, access it.
 --
 --   When 'comp' and 'box' are known, its possible to 'specialise' this function.
 --
-select :: forall comp box a . HasComponent (Find comp box) comp box => ComponentM comp a -> ComponentM box a
+select :: forall comp box a . Contains box comp => ComponentM comp a -> ComponentM box a
 select = selectComponent @(Find comp box)
