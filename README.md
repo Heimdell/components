@@ -124,6 +124,6 @@ If logger fails on `info "Shouldn't be printed"`, it will fallthrough `catchFrom
 # Caveats
 
 Current implementation is dumb, and unable to see if component is used twice: its state and environment would be duplicated.
-This can be seen as feature for some cases with component state; but the duplication of _readonly_ environments is unnessessary.
+This can be seen as feature for some cases with component state; but the duplication of _readonly_ environments is unnecessary.
 
 I may fix this later, possibly by adding `Unique` wrapper.
